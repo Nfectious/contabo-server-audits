@@ -2,8 +2,40 @@
 
 set -euo pipefail
 
+# audit.sh — Contabo server audit
+# Usage: ./audit.sh [--outdir DIR] [--summary-only] [--help]
+# Examples:
+#   ./audit.sh --outdir ./$(date +%Y-%m-%d_%H%M%S)_server_audit
+#   ./audit.sh --summary-only --outdir ./latest_audit
+# This script collects system facts and writes both a full audit and a quick
+# summary in text and markdown formats. Use --summary-only to generate only
+# quick summary artifacts (smaller, faster).
+
 OUTDIR="$HOME/contabo_audit"
 STAMP="$(date +%Y%m%d_%H%M%S)"
+
+# Parse simple flags
+SUMMARY_ONLY=0
+while [ "$#" -gt 0 ]; do
+  case "$1" in
+    --outdir)
+      shift
+      OUTDIR="$1"
+      ;;
+    --summary-only)
+      SUMMARY_ONLY=1
+      ;;
+    -h|--help)
+      sed -n '1,40p' "$0" | sed -n '1,40p'
+      echo
+      echo "Usage: $0 [--outdir DIR] [--summary-only]"; exit 0
+      ;;
+    *)
+      echo "Unknown arg: $1" >&2; exit 2
+      ;;
+  esac
+  shift
+done
 
 # Main reports
 TXT="$OUTDIR/server_audit_$STAMP.txt"
@@ -116,6 +148,14 @@ UFW_STATE="$( (ufw status verbose) 2>/dev/null || echo "UFW not installed or not
 # Update latest pointers for quick checks
 ln -sf "$(basename "$SUMTX")" "$SUMTX_LATEST"
 ln -sf "$(basename "$SUMMD")" "$SUMMD_LATEST"
+
+# If requested, only generate the quick summary artifacts and exit
+if [ "$SUMMARY_ONLY" -eq 1 ]; then
+  echo "Summary-only mode enabled. Generated:"
+  echo "  Quick Summary (TXT): $SUMTX"
+  echo "  Quick Summary (MD):  $SUMMD"
+  exit 0
+fi
 
 # ---------- Full report (Summary at top + TOC) ----------
 {

@@ -1,0 +1,20 @@
+# Ignore common editor and OS files
+.DS_Store
+Thumbs.db
+*.swp
+.vscode/
+.idea/
+
+# Python artifacts
+*.pyc
+__pycache__/
+
+# Archives and bundles produced by the audit
+*.tgz
+*.zip
+
+# Local temp audit dirs (if you choose to create them outside of repo root)
+contabo_audit/
+
+# Summary latest pointers (optional)
+summary_latest.*
