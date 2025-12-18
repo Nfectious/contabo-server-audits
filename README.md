@@ -36,6 +36,15 @@ Example crontab (runs at 3:05am on Sundays):
 5 3 * * 0 cd /path/to/repo && ./scripts/auto_audit.sh
 ```
 
+### Scheduling options
+See `docs/CRON.md` for both crontab and `systemd` timer examples (recommended for servers using systemd).
+
+### Continuous checks (CI)
+A lightweight GitHub Action is included (`.github/workflows/shellcheck.yml`) to run ShellCheck against our scripts on push and pull requests. This helps catch common shell issues early and keeps the audit scripts robust.
+
+### Summaries
+Run `./scripts/extract_summaries.sh` to create a compact CSV (`summaries/all_summaries.csv`) and a human-readable `summaries/latest_summary.md` that extract the key measurement fields from `summary_*.md` files.
+
 ## Key Files
 - `*_server_audit.md` — Human-readable full report.
 - `summary_*.md` / `summary_*.txt` — Quick summaries for quick checks.
